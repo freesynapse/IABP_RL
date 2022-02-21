@@ -3,11 +3,11 @@
 #include <chrono>
 
 #include "../utils/SDLWrapper.h"
-#include "../utils/FileIOHandler.h"
+#include "../utils/AsyncIOHandler.h"
 
 // global instances
 //std::shared_ptr<SDLWrapper> sdl = nullptr;
-std::shared_ptr<FileIOHandler> data_writer = nullptr;
+std::shared_ptr<AsyncIOHandler> data_writer = nullptr;
 
 #define SIM_FREQUENCY_HZ 50.0
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 
 	// Create async IO stream
 	printf("--- Creating data streams ---\n");
-	data_writer = newFileIOHandler(NUM_VARIABLES, FileIOMode::WRITE);
+	data_writer = newAsyncIOHandler(NUM_VARIABLES, AsyncIOMode::WRITE);
 
 	// start generating data
 	printf("--- Simulating data ---\n");

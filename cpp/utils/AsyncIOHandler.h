@@ -17,31 +17,31 @@
 #include "SDLWrapper.h"
 
 //
-enum class FileIOMode
+enum class AsyncIOMode
 {
     READ = 0,
     WRITE
 };
 
 // data type of data generation
-typedef uint32_t sim_data_t;
-//typedef float sim_data_t;
+//typedef uint32_t sim_data_t;
+typedef float sim_data_t;
 
 // for IntelliSense
-class FileIOHandler;
-static inline std::shared_ptr<FileIOHandler> newFileIOHandler(size_t _data_block_size, 
-                                                              FileIOMode _mode=FileIOMode::READ,
-                                                              const std::string& _file_name="/home/iomanip/src/IABP_RL/data.bin")
-{   return std::make_shared<FileIOHandler>(_data_block_size, _mode, _file_name);   }
+class AsyncIOHandler;
+static inline std::shared_ptr<AsyncIOHandler> newAsyncIOHandler(size_t _data_block_size, 
+                                                                AsyncIOMode _mode=AsyncIOMode::READ,
+                                                                const std::string& _file_name="/home/iomanip/src/IABP_RL/data.bin")
+{   return std::make_shared<AsyncIOHandler>(_data_block_size, _mode, _file_name);   }
 
 //-----------------------------------------------------------------------------------
-class FileIOHandler
+class AsyncIOHandler
 {
 private:
     //-----------------------------------------------------------------------------------
     int m_filePtr = -1;
     std::string m_fileName;
-    FileIOMode m_mode;
+    AsyncIOMode m_mode;
     
     size_t m_dataBlockSize = 0;
     size_t m_dataSizeBytes = 0;
@@ -56,21 +56,21 @@ public:
     //-----------------------------------------------------------------------------------
 public:
     //-----------------------------------------------------------------------------------
-    FileIOHandler(size_t _data_block_size,
-                  FileIOMode _mode=FileIOMode::READ, 
-                  const std::string& _file_name="/home/iomanip/src/IABP_RL/data.bin") :
+    AsyncIOHandler(size_t _data_block_size,
+                   AsyncIOMode _mode=AsyncIOMode::READ, 
+                   const std::string& _file_name="/home/iomanip/src/IABP_RL/data.bin") :
         m_dataBlockSize(_data_block_size),
         m_mode(_mode),    
         m_fileName(_file_name)
     {
         m_dataSizeBytes = m_dataBlockSize * sizeof(sim_data_t);
 
-        printf("FileIOHandler initialized in FileIOMode::%s mode (block size = %lu).\n", 
-            m_mode==FileIOMode::READ ? "READ" : "WRITE",
+        printf("FileIOHandler initialized in AsyncIOMode::%s mode (block size = %lu).\n", 
+            m_mode==AsyncIOMode::READ ? "READ" : "WRITE",
             m_dataBlockSize);
 
         // open file for I/O
-        if (m_mode == FileIOMode::READ)
+        if (m_mode == AsyncIOMode::READ)
         {
             m_filePtr = open(m_fileName.c_str(), O_RDONLY);
             validatePtr();
@@ -80,7 +80,7 @@ public:
             m_fileSz = st.st_size;
             printf("Current stream size = %lu\n", m_fileSz);
         }
-        else if (m_mode == FileIOMode::WRITE)
+        else if (m_mode == AsyncIOMode::WRITE)
         {
             m_filePtr = open(m_fileName.c_str(), O_CREAT | O_RDWR | O_APPEND, 0666);
             validatePtr();
@@ -97,7 +97,7 @@ public:
 
     }
     //-----------------------------------------------------------------------------------
-    ~FileIOHandler()
+    ~AsyncIOHandler()
     {
         if (m_filePtr != -1)
         {
@@ -168,7 +168,7 @@ public:
 
             // DEBUG
             for (int i = 0; i < m_dataBlockSize; i++)
-                printf("%u ", m_data[i]);
+                printf("%.1f ", m_data[i]);
             printf("\n");
         }
 
